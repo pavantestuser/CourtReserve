@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(120, 39%, 48%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(14, 100%, 57%);
+  --accent-foreground: hsl(60, 9.1%, 97.8%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  
+  /* Sports facility specific colors */
+  --surface: hsl(60, 4.8%, 95.9%);
+  --warning: hsl(45, 100%, 51%);
+  --success: hsl(120, 39%, 48%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Material Design inspired shadows */
+  .material-shadow {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+  }
+  
+  .material-shadow-lg {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 12px 24px rgba(0,0,0,0.15);
+  }
+
+  /* Court card hover effects */
+  .court-card {
+    @apply transition-all duration-200 ease-in-out;
+  }
+  
+  .court-card:hover {
+    @apply -translate-y-1;
+  }
+
+  /* Time slot styling */
+  .time-slot {
+    @apply transition-colors duration-150 ease-in-out;
+  }
+  
+  .time-slot:hover:not(:disabled) {
+    @apply bg-blue-50 dark:bg-blue-900/20;
+  }
+  
+  .time-slot.selected {
+    @apply bg-primary text-primary-foreground;
+  }
+  
+  .time-slot.booked {
+    @apply bg-red-50 text-red-600 cursor-not-allowed dark:bg-red-900/20 dark:text-red-400;
+  }
+
+  /* Mobile-first responsive utilities */
+  .mobile-container {
+    @apply max-w-md mx-auto bg-white min-h-screen relative;
+  }
+
+  /* Sports facility brand colors */
+  .bg-tennis {
+    background-color: hsl(120, 39%, 48%);
+  }
+  
+  .bg-basketball {
+    background-color: hsl(25, 95%, 53%);
+  }
+  
+  .bg-football {
+    background-color: hsl(207, 90%, 54%);
+  }
+  
+  .text-tennis {
+    color: hsl(120, 39%, 48%);
+  }
+  
+  .text-basketball {
+    color: hsl(25, 95%, 53%);
+  }
+  
+  .text-football {
+    color: hsl(207, 90%, 54%);
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Safe area insets for mobile devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
