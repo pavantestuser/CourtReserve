@@ -131,16 +131,8 @@ export class MemStorage implements IStorage {
       isActive: true,
     });
 
-    // Create default admin/staff user
-    await this.createUser({
-      username: "admin",
-      password: "admin123", // Will be hashed by auth system
-      email: "admin@samplecollege.edu",
-      fullName: "System Administrator",
-      role: "staff",
-      institutionId: defaultInstitution.id,
-      isActive: true,
-    });
+    // Create default admin/staff user (password will be hashed during registration)
+    // Note: Password hashing will be handled by auth endpoints
 
     // Create default courts
     const defaultCourts: InsertCourt[] = [

@@ -521,6 +521,49 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Development endpoint to create default admin user
+  app.post("/api/setup/admin", async (req, res) => {
+    try {
+      const institutions = await storage.getInstitutions();
+      if (institutions.length === 0) {
+        return res.status(400).json({ error: "No institutions found" });
+      }
+
+      const defaultInstitution = institutions[0];
+      
+      // Check if admin already exists
+      const existingAdmin = await storage.getUserByUsername("admin");
+      if (existingAdmin) {
+        return res.json({ message: "Admin user already exists", user: existingAdmin });
+      }
+
+      // Import hashing functions from auth module
+      const { scrypt, randomBytes } = await import("crypto");
+      const { promisify } = await import("util");
+      const scryptAsync = promisify(scrypt);
+
+      const password = "admin123";
+      const salt = randomBytes(16).toString("hex");
+      const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+      const hashedPassword = `${buf.toString("hex")}.${salt}`;
+
+      const adminUser = await storage.createUser({
+        username: "admin",
+        password: hashedPassword,
+        email: "admin@samplecollege.edu",
+        fullName: "System Administrator",
+        role: "staff",
+        institutionId: defaultInstitution.id,
+        isActive: true,
+      });
+
+      res.json({ message: "Admin user created successfully", user: adminUser });
+    } catch (error) {
+      console.error("Error creating admin user:", error);
+      res.status(500).json({ error: "Failed to create admin user" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
