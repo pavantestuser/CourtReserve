@@ -1,8 +1,8 @@
-# Sports Facility Management System
+# Sports Facility Booking & Tracking App
 
 ## Overview
 
-This is a full-stack sports facility management system built with a React frontend and Express.js backend. The application allows users to book sports courts, track their sports activities, and provides administrative functionality for managing facilities. It uses a PostgreSQL database with Drizzle ORM for data management.
+This is a comprehensive sports facility booking and tracking system built with React frontend and Express.js backend. The application supports multi-institution management with role-based access control for colleges, schools, and sports arenas. Features include advanced booking logic with capacity management, group restrictions, sports tracking analytics, and mobile-responsive design optimized for institutional use.
 
 ## User Preferences
 
@@ -33,62 +33,95 @@ Preferred communication style: Simple, everyday language.
 
 ## Key Components
 
-### Authentication System
+### Multi-Institution Architecture
+- Support for multiple institutions (colleges, schools, sports arenas)
+- Institution types: Private (controlled access) and Public (open registration)
+- Institution-specific court and user management
+- Centralized system with distributed access control
+
+### Advanced Authentication System
 - Session-based authentication using Passport.js
 - Password hashing with scrypt and salt
-- Role-based access control (user/admin)
-- Protected routes on both client and server
+- Four-tier role system: Super Admin, Staff, Student, Public User
+- Auto-generated student IDs with format: {InstituteCode}_{Group}_{Sequential}
+- Institution-specific user management and access control
 
-### Court Management
-- CRUD operations for sports courts
-- Support for different court types (tennis, basketball, football)
-- Court availability tracking
-- Hourly rate and capacity management
+### Group Management System
+- Student organization into groups/sections (A1, A2, B1, etc.)
+- Group-based booking restrictions and permissions
+- Hierarchical user management within institutions
+- Staff control over group access to specific time slots
 
-### Booking System
-- Time slot-based booking system
-- User booking history and management
-- Real-time availability checking
-- Booking status tracking (confirmed, cancelled, completed)
+### Enhanced Court Management
+- Multi-institution court management
+- Sport-specific categorization (tennis, basketball, football, badminton)
+- Court type classification (indoor, outdoor, synthetic)
+- Capacity-based booking with dynamic availability tracking
+- Institution-specific court visibility and access
 
-### Sports Tracking
-- User activity tracking and analytics
-- Performance metrics and statistics
-- Weekly/monthly activity summaries
+### Advanced Booking System
+- Capacity-aware time slot management
+- Group-restricted booking permissions
+- One-slot-per-day enforcement options
+- Real-time availability with player count tracking
+- Repeat slot creation for recurring schedules
+- Institution-isolated booking data
 
-### Admin Dashboard
-- Court management interface
-- System analytics and reporting
-- User management capabilities
+### Sports Tracking & Analytics
+- User activity tracking across multiple sports
+- Institution-specific performance analytics
+- Group-based participation statistics
+- Individual and institutional reporting
+- Sports progression and usage patterns
 
-### Mobile-First UI
-- Responsive design optimized for mobile devices
-- Bottom navigation for mobile experience
-- Side drawer navigation
-- Touch-friendly interactions
+### Enhanced Admin Dashboard
+- Multi-level administration (Super Admin vs Staff)
+- Institution-specific management interfaces
+- Advanced user creation and group assignment
+- Comprehensive booking and usage analytics
+- Court utilization and revenue tracking
+
+### Mobile-First Responsive Design
+- Touch-optimized interface for mobile devices
+- Bottom navigation for primary actions
+- Responsive layout adapting to all screen sizes
+- Institution branding and customization support
 
 ## Data Flow
 
-### Authentication Flow
+### Enhanced Authentication Flow
 1. User provides credentials via login form
-2. Server validates credentials using Passport.js
-3. Session is created and stored in PostgreSQL
-4. Client receives user data and updates global state
-5. Protected routes check authentication status
+2. Server validates credentials using Passport.js with institution context
+3. Session is created and stored with role and institution data
+4. Client receives user data including role, institution, and group information
+5. Protected routes check authentication status and role permissions
+6. Institution-specific data filtering applied based on user context
 
-### Booking Flow
-1. User selects court and desired time slot
-2. Client checks availability via API
-3. Server validates booking constraints
-4. Booking is created and stored in database
-5. Client updates UI to reflect new booking
+### Advanced Booking Flow
+1. User selects sport type and views available courts for their institution
+2. System filters courts based on user's group permissions and institution
+3. Available time slots displayed with capacity and group restrictions
+4. User selects time slot, system validates:
+   - Slot capacity availability
+   - Group permission compliance
+   - One-slot-per-day restrictions (if enabled)
+   - Institution access rights
+5. Booking is created and slot capacity updated automatically
+6. Sports tracking data recorded for analytics
 
-### Court Management Flow (Admin)
-1. Admin accesses court management interface
-2. CRUD operations are performed via API
-3. Server validates admin permissions
-4. Database is updated accordingly
-5. Client refreshes court list
+### Multi-Institution Management Flow
+1. Super Admin creates new institutions with type (private/public)
+2. Staff users are assigned to specific institutions
+3. Staff creates groups/sections for student organization
+4. Students are added with auto-generated IDs: {InstituteCode}_{Group}_{Number}
+5. Courts are created within institution context
+6. Time slots are configured with group restrictions and capacity limits
+
+### Group-Based Access Control Flow
+1. Staff defines which groups can access specific time slots
+2. Students can only see and book slots allowed for their group
+3. Public users (for public institutions) have unrestricted access
+4. System enforces group permissions at both API and UI levels
 
 ## External Dependencies
 

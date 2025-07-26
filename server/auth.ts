@@ -53,26 +53,54 @@ export function setupAuth(app: Express) {
   );
 
   passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser(async (id: number, done) => {
+  passport.deserializeUser(async (id: string, done) => {
     const user = await storage.getUser(id);
     done(null, user);
   });
 
+  // Enhanced registration for public users
   app.post("/api/register", async (req, res, next) => {
-    const existingUser = await storage.getUserByUsername(req.body.username);
-    if (existingUser) {
-      return res.status(400).send("Username already exists");
+    try {
+      const { username, email, institutionCode } = req.body;
+      
+      // Check for existing user
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ error: "Username already exists" });
+      }
+
+      const existingEmail = await storage.getUserByEmail(email);
+      if (existingEmail) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+
+      // Find institution by code
+      const institution = await storage.getInstitutionByCode(institutionCode);
+      if (!institution) {
+        return res.status(400).json({ error: "Invalid institution code" });
+      }
+
+      // Only allow registration for public institutions
+      if (institution.type !== "public") {
+        return res.status(403).json({ 
+          error: "This institution requires staff approval for account creation" 
+        });
+      }
+
+      const user = await storage.createUser({
+        ...req.body,
+        password: await hashPassword(req.body.password),
+        role: "public_user",
+        institutionId: institution.id,
+      });
+
+      req.login(user, (err) => {
+        if (err) return next(err);
+        res.status(201).json(user);
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Registration failed" });
     }
-
-    const user = await storage.createUser({
-      ...req.body,
-      password: await hashPassword(req.body.password),
-    });
-
-    req.login(user, (err) => {
-      if (err) return next(err);
-      res.status(201).json(user);
-    });
   });
 
   app.post("/api/login", passport.authenticate("local"), (req, res) => {

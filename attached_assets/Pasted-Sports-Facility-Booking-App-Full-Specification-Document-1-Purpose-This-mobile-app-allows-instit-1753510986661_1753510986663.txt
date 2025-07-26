@@ -1,0 +1,77 @@
+Sports Facility Booking App – Full Specification Document
+1. Purpose
+This mobile app allows institutions like colleges, schools, and sports arenas to manage and book sports facilities through a role-based, structured platform. Built with React Native (frontend) and Django (backend), the app supports multi-institution access, private/public booking controls, and smart user and slot management.
+2. Core Entities & Relationships
+2.1 Institution
+- Can be marked as Public (anyone can book) or Private (only authorized users).
+- Created by Super Admin.
+2.2 Groups (Sections)
+- Used to organize students (e.g., A1, A2, B1).
+- Assigned to each student.
+- Staff can control which groups can book each slot.
+2.3 Users
+Role Descriptions:
+- Super Admin: Manages all institutions.
+- Staff: Assigned to one institution, manages courts and slots.
+- Student / Public User: Can book slots if permitted.
+3. User Registration & Grouping
+3.1 Student Creation (Private Institutions)
+- Staff adds/imports students.
+- Assigns them to groups/sections.
+- Auto-generated username format: <CollegeCode>_<Group>_<ID> (e.g., COLA_A1_001).
+3.2 Public User (Public Institutions)
+- Anyone can register via the app.
+- No group restrictions apply unless specified.
+4. Court Management (by Staff)
+Fields:
+- Court Name: e.g., Badminton Court 1
+- Sport Type: e.g., Badminton, Tennis
+- Capacity: Max number of players per slot (e.g., 2 or 4)
+- Court Type: Optional (Indoor/Outdoor/Synthetic)
+5. Slot Creation (by Staff)
+Fields:
+- Institution (Auto-set based on staff login)
+- Sport Type (Dropdown, required)
+- Court (Dropdown, required)
+- Date (Date Picker, required)
+- Start Time (Time Picker, required)
+- End Time (Time Picker, required)
+- Max Players (Auto-set from court config)
+- Allowed Groups (Multi-select)
+- One Slot per Day (Optional toggle)
+- Repeat Slot (Optional)
+6. Booking Flow (User Side)
+Step-by-Step:
+1. Login → See allowed courts (based on group & visibility).
+2. Select sport → Select court → View slots.
+3. Choose slot (if not full) → Confirm booking.
+4. Slot shows remaining capacity: e.g., 2/4 Booked.
+7. Booking Restrictions
+- One booking per day: If enabled, user cannot book more than 1 slot in a day.
+- Group-restricted slot: Only users from selected groups can book.
+- Slot full: If max players reached, no more bookings allowed.
+- Cancelation window: User can cancel until X hours before start time.
+8. Backend Logic (Django)
+Models Overview:
+- Institution
+- Group
+- SportCourt
+- Slot
+- Booking
+9. Tracking & Reporting
+Admins:
+- Daily/weekly/monthly usage reports
+- Top booked courts
+- Group-based participation stats
+
+Users:
+- View past and upcoming bookings
+- Track total hours played
+10. Deployment Overview
+Component       | Tech Used           | Deployment Target
+--------------- | ------------------- | ------------------
+Frontend        | React Native + Expo | Google Play / App Store
+Backend         | Django REST API     | AWS / Render / Heroku
+Database        | PostgreSQL          | RDS / Supabase
+Auth            | JWT + Role-based    | DRF Simple JWT
+File Storage    | Optional            | Amazon S3 / Cloudinary
