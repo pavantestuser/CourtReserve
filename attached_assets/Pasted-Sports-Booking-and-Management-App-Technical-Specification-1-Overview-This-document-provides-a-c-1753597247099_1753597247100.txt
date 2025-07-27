@@ -1,0 +1,181 @@
+Sports Booking and Management App - Technical Specification
+1. Overview
+This document provides a complete technical specification for the Sports Booking and Management App. The app is designed to facilitate slot booking and court management for schools, colleges, and sports arenas. The system supports different user roles, including public users, organization administrators, and staff. It allows centralized and decentralized control of booking functionality based on organizational policies.
+
+2. Aim
+To develop a robust and scalable application using React Native for the frontend and Django for the backend that allows users to book sports slots, and administrators to manage organizations, courts, staff, and other configurations.
+3. Key Features
+
+- Role-based Access: Admin, Org Admin, Staff, User (Public/Private)
+- Add and Manage Organizations (Private/Public)
+- Add Staff and assign roles
+- Add Facilities, Courts, and Groups
+- Slot Booking with Time Restrictions
+- Group Booking (e.g., 2/4 players per game)
+- Restrict Number of Slots per Day
+- Public and Private Slot Management
+- Dynamic UI Role Switcher (Admin/Org Admin/Staff/User)
+- Real-time Slot Tracking and Sports Analytics
+- Payments for Slots (optional)
+
+4. Architecture Design
+The app uses a multi-tenant architecture. A central app-side admin controls organization creation and organization admin assignments. Each organization has its own data isolation and access control.
+
+5. Database Models Overview
+
+- AppAdministration (App Side Admin)
+- Organization (Name, Type - Public/Private, Created by Admin)
+- OrganizationAdmin (FK to Organization, FK to User)
+- Staff (FK to Organization, FK to User)
+- User (UUID, username, email, assigned_organization nullable)
+- Group (Name, Users assigned, FK to Organization)
+- Facility (e.g., Badminton, Basketball) FK to Organization
+- Court (FK to Facility, Max players per game)
+- Section (FK to Organization, FK to User, section_name)
+- Slot (FK to Court, Date, Start Time, End Time, Max Booking Count, Restriction Options)
+- Booking (FK to Slot, FK to User)
+- Payment (Optional: amount, FK to Booking)
+
+6. Role Switch Logic
+
+A user can be assigned multiple roles:
+- Public User (default, can book public slots)
+- Private User (if assigned to an organization)
+- Staff (if added as staff to an organization)
+- Org Admin (one per organization)
+UI should show switch role button if user has multiple roles.
+
+7. Flow Diagram
+
+Admin --> Add Organization --> Add Org Admin
+Org Admin --> Add Staff --> Add Facility & Court --> Add Slots (With Restriction Settings)
+Staff --> Manage Courts, Facilities, Slots, Groups, Users, Sections
+User --> Book Slot (based on permission: Public or Org Private)
+
+8. API Design
+
+- POST /api/register/
+- POST /api/login/
+- POST /api/organization/ [Admin only]
+- POST /api/organization-admin/ [Admin only]
+- POST /api/staff/ [Org Admin only]
+- POST /api/facility/
+- POST /api/court/
+- POST /api/slot/
+- POST /api/booking/
+- POST /api/payment/
+
+Scalable Sports Booking and Management System – Database Design
+1. Introduction
+This document describes a scalable database schema for a sports booking and management system that supports both public and private organizations. The system is designed with role-based access, facility and court booking features, section/group management, and supports multi-tenancy.
+2. Requirements
+- Support for public and private organizations
+- Role-based access (App Admin, Organization Admin, Staff, Users)
+- Facility and court bookings with restrictions and slot management
+- Section and group management
+- Multi-tenancy with optional separate DB/schema per organization
+3. Core Entities and Relationships
+App_Admin
+- admin_id (PK)
+- name
+- email
+- password_hash
+- phone
+- App Admin manages the overall platform and can create organizations.
+Organization
+- org_id (PK)
+- name
+- type → ('public', 'private')
+- created_by → FK to App_Admin.admin_id
+- is_active
+- Created by App Admin. Can be public or private.
+Org_Admin
+- org_admin_id (PK)
+- user_id (FK to User)
+- org_id (FK to Organization)
+- is_active
+- A special user with permission to manage an organization.
+Staff
+- staff_id (PK)
+- user_id (FK to User)
+- org_id (FK to Organization)
+- can_manage_sections (bool)
+- can_manage_facilities (bool)
+- can_manage_users (bool)
+- can_add_slots (bool)
+- Assigned by Org Admin. Manages org resources and users.
+User
+- user_id (PK)
+- username (UNIQUE)
+- full_name
+- email
+- password_hash
+- phone
+- public_user (bool)
+- Can book public slots and may later be assigned to an org.
+User_Organization_Map
+- id (PK)
+- user_id (FK to User)
+- org_id (FK to Organization)
+- role → ('admin', 'staff', 'member')
+- is_active
+- Many-to-many mapping of users to organizations with role-based context.
+Group
+- group_id (PK)
+- org_id (FK to Organization)
+- name
+- description
+- Used for grouping users within an organization.
+User_Group_Map
+- id (PK)
+- user_id (FK to User)
+- group_id (FK to Group)
+- Maps users to groups for role segregation.
+Section
+- section_id (PK)
+- org_id (FK to Organization)
+- name
+- assigned_to_user (FK to User) – optional
+Facility
+- facility_id (PK)
+- org_id (FK to Organization)
+- name (e.g., 'Badminton', 'Tennis')
+- description
+Court
+- court_id (PK)
+- facility_id (FK to Facility)
+- name
+- players_required (2 or 4)
+- available_to_public (bool)
+- Whether this court is bookable by public or only by assigned org users.
+Slot
+- slot_id (PK)
+- court_id (FK to Court)
+- date
+- start_time
+- end_time
+- restricted_to_once_per_day (bool)
+- max_bookings (int)
+- price
+- Created by staff; can be restricted or priced.
+Booking
+- booking_id (PK)
+- slot_id (FK to Slot)
+- user_id (FK to User)
+- status → ('booked', 'cancelled', 'completed')
+- booking_time
+Payments
+- payment_id (PK)
+- booking_id (FK to Booking)
+- amount
+- status → ('pending', 'paid', 'failed')
+- payment_method
+- transaction_id
+5. Switch Option Logic
+Users with multiple roles (such as Org Admin and Staff) should be presented with a role selector upon login. The following roles should be shown for selection:
+- App Admin
+- Organization Admin
+- Staff
+- User (Private/Public)
+
+
